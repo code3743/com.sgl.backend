@@ -1,0 +1,13 @@
+spring:
+    datasource:
+        url: jdbc:postgresql://localhost:5432/sgldb
+        username: admin
+        password: password
+        driver-class-name: org.postgresql.Driver
+    jpa:
+        hibernate:
+            ddl-auto: update
+        show-sql: true
+jwt:
+    secret: secret-key
+    expiration-ms: 3600000
