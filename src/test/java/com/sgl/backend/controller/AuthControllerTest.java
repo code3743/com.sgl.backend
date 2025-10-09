@@ -2,6 +2,8 @@ package com.sgl.backend.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sgl.backend.exception.SglAuthException;
+import com.sgl.backend.security.JwtAuthenticationFilter;
+import com.sgl.backend.security.JwtService;
 import com.sgl.backend.dto.LoginRequest;
 import com.sgl.backend.dto.LoginResponse;
 import com.sgl.backend.service.AuthService;
@@ -12,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -29,6 +32,12 @@ public class AuthControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @MockitoBean
+    private JwtService jwtService;
+
+    @MockitoBean
+    private JwtAuthenticationFilter jwtAuthenticationFilter; 
 
     @Autowired
     private AuthService authService;
