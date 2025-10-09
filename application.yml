@@ -9,7 +9,7 @@ spring:
             ddl-auto: update
         show-sql: true
 jwt:
-    secret: secret-key
+    secret: EChRhAiO8AuAse52JsR2O86UA1EfmQ3YK3APUr0kBBo=
     expiration-ms: 3600000
 sira:
   base-url: http://localhost:3000/api  
