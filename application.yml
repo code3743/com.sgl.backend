@@ -11,3 +11,10 @@ spring:
 jwt:
     secret: secret-key
     expiration-ms: 3600000
+sira:
+  base-url: http://localhost:3000/api  
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
