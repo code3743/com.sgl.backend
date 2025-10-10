@@ -26,7 +26,7 @@ public class UserController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Role updated successfully"),
             @ApiResponse(responseCode = "400", description = "User or role not found"),
-            @ApiResponse(responseCode = "403", description = "Forbidden: Requires ADMIN role"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized: Requires ADMIN role"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<User> updateUserRole(@PathVariable String userCode, @RequestParam String roleName) {
@@ -38,7 +38,7 @@ public class UserController {
     @Operation(summary = "List all users", description = "Retrieves all users with their roles for admin management. Restricted to ADMIN.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "List of users retrieved"),
-            @ApiResponse(responseCode = "403", description = "Forbidden: Requires ADMIN role"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized: Requires ADMIN role"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<List<User>> getAllUsers() {

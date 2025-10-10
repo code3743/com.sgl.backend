@@ -25,7 +25,7 @@ public class RoleController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Role created successfully"),
             @ApiResponse(responseCode = "400", description = "Role already exists"),
-            @ApiResponse(responseCode = "403", description = "Forbidden: Requires ADMIN role"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized: Requires ADMIN role"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<Role> createRole(@RequestBody String roleName) {
@@ -37,7 +37,7 @@ public class RoleController {
     @Operation(summary = "Get all roles", description = "Retrieves all roles. Restricted to ADMIN.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "List of roles retrieved"),
-            @ApiResponse(responseCode = "403", description = "Forbidden: Requires ADMIN role"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized: Requires ADMIN role"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<List<Role>> getAllRoles() {
@@ -50,7 +50,7 @@ public class RoleController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Role updated successfully"),
             @ApiResponse(responseCode = "400", description = "Role not found or name already exists"),
-            @ApiResponse(responseCode = "403", description = "Forbidden: Requires ADMIN role"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized: Requires ADMIN role"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<Role> updateRole(@PathVariable Long roleId, @RequestBody String roleName) {
@@ -63,7 +63,7 @@ public class RoleController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Role deleted successfully"),
             @ApiResponse(responseCode = "400", description = "Role not found or cannot delete default role"),
-            @ApiResponse(responseCode = "403", description = "Forbidden: Requires ADMIN role"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized: Requires ADMIN role"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<Void> deleteRole(@PathVariable Long roleId) {

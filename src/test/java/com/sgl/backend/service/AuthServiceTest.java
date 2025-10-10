@@ -93,7 +93,7 @@ class AuthServiceTest {
     void authenticate_student_success() {
         LoginRequest request = new LoginRequest("12345", "password");
         SiraLoginResponse siraResponse = new SiraLoginResponse("sira_token", true);
-        SiraUserInfo userInfo = new SiraUserInfo("Ingeniería", "John Doe", "12345", "john@correounivalle.edu.co", "123456789");
+        SiraUserInfo userInfo = new SiraUserInfo("3743", "John Doe", "12345", "john@correounivalle.edu.co", "123456789");
         Role studentRole = Role.builder().id(1L).name("ESTUDIANTE").build();
         User user = User.builder().code("12345").name("John Doe").email("john@correounivalle.edu.co").document("123456789").role(studentRole).build();
 
@@ -123,6 +123,107 @@ class AuthServiceTest {
             authService.authenticate(request);
         }, "SIRA authentication failed: Invalid credentials");
     }
+
+    @Test
+    void upsertUser_existingUser_updatesInfo() {
+        SiraUserInfo userInfo = new SiraUserInfo("3743", "Jane Doe", "54321", "jane@correo.edu", "987654321");
+        Role docenteRole = Role.builder().id(2L).name("DOCENTE").build();
+        User existingUser = User.builder()
+                .code("54321").name("Old Name").email("old@email").document("111").role(docenteRole).build();
+
+        when(userRepository.findById("54321")).thenReturn(Optional.of(existingUser));
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        setField(authService, "siraBaseUrl", "http://localhost:3000/api");
+
+        User updatedUser = invokeUpsertUser(userInfo, false);
+
+        assertThat(updatedUser.getName()).isEqualTo("Jane Doe");
+        assertThat(updatedUser.getEmail()).isEqualTo("jane@correo.edu");
+        assertThat(updatedUser.getDocument()).isEqualTo("987654321");
+        verify(userRepository).save(any(User.class));
+    }
+
+    @Test
+    void upsertUser_roleNotFound_throwsException() {
+        SiraUserInfo userInfo = new SiraUserInfo("3743", "Carlos", "99999", "carlos@correo.edu", "000111222");
+        when(userRepository.findById("99999")).thenReturn(Optional.empty());
+        when(roleRepository.findByName("DOCENTE")).thenReturn(Optional.empty());
+
+        assertThrows(SglAuthException.class, () -> invokeUpsertUser(userInfo, false),
+                "Role not found: DOCENTE");
+    }
+
+    @Test
+    void fetchSiraUserInfo_invalidToken_throwsException() {
+        when(restTemplate.exchange(
+                eq("http://localhost:3000/api/teacher/info"),
+                eq(HttpMethod.GET),
+                any(HttpEntity.class),
+                eq(SiraUserInfo.class)
+        )).thenThrow(new HttpClientErrorException(HttpStatus.UNAUTHORIZED));
+
+        assertThrows(SglAuthException.class, () -> invokeFetchSiraUserInfo("bad_token", false),
+                "SIRA user info failed: Invalid token");
+    }
+
+    @Test
+    void fetchSiraUserInfo_nullBody_throwsException() {
+        when(restTemplate.exchange(
+                eq("http://localhost:3000/api/student/info"),
+                eq(HttpMethod.GET),
+                any(HttpEntity.class),
+                eq(SiraUserInfo.class)
+        )).thenReturn(ResponseEntity.ok(null));
+
+        assertThrows(SglAuthException.class, () -> invokeFetchSiraUserInfo("token", true),
+                "SIRA user info failed: No response body");
+    }
+
+    @Test
+    void authenticateWithSira_nullBody_throwsException() {
+        when(restTemplate.postForEntity(
+                eq("http://localhost:3000/api/auth"),
+                any(SiraLoginRequest.class),
+                eq(SiraLoginResponse.class))
+        ).thenReturn(ResponseEntity.ok(null));
+
+        assertThrows(SglAuthException.class, () -> invokeAuthenticateWithSira("code", "pass"));
+    }
+
+    private User invokeUpsertUser(SiraUserInfo userInfo, boolean isStudent) {
+        try {
+            var method = AuthService.class.getDeclaredMethod("upsertUser", SiraUserInfo.class, boolean.class);
+            method.setAccessible(true);
+            return (User) method.invoke(authService, userInfo, isStudent);
+        } catch (Exception e) {
+            if (e.getCause() instanceof RuntimeException) throw (RuntimeException) e.getCause();
+            throw new RuntimeException(e);
+        }
+    }
+
+    private SiraUserInfo invokeFetchSiraUserInfo(String token, boolean isStudent) {
+        try {
+            var method = AuthService.class.getDeclaredMethod("fetchSiraUserInfo", String.class, boolean.class);
+            method.setAccessible(true);
+            return (SiraUserInfo) method.invoke(authService, token, isStudent);
+        } catch (Exception e) {
+            if (e.getCause() instanceof RuntimeException) throw (RuntimeException) e.getCause();
+            throw new RuntimeException(e);
+        }
+    }
+
+    private SiraLoginResponse invokeAuthenticateWithSira(String code, String password) {
+        try {
+            var method = AuthService.class.getDeclaredMethod("authenticateWithSira", String.class, String.class);
+            method.setAccessible(true);
+            return (SiraLoginResponse) method.invoke(authService, code, password);
+        } catch (Exception e) {
+            if (e.getCause() instanceof RuntimeException) throw (RuntimeException) e.getCause();
+            throw new RuntimeException(e);
+        }
+    }
+
 
     private void setField(Object target, String fieldName, Object value) {
         try {
