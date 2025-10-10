@@ -33,6 +33,9 @@ public class RoleService {
     public Role updateRole(Long roleId, String roleName) {
         Role role = roleRepository.findById(roleId)
                 .orElseThrow(() -> new SglException("Role not found: " + roleId));
+        if("ADMIN".equals(role.getName())) {
+            throw new SglException("Cannot update default role: ADMIN");
+        }
         if (roleRepository.findByName(roleName).isPresent() && !role.getName().equals(roleName)) {
             throw new SglException("Role name already exists: " + roleName);
         }

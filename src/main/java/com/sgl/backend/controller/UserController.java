@@ -7,6 +7,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,5 +32,17 @@ public class UserController {
     public ResponseEntity<User> updateUserRole(@PathVariable String userCode, @RequestParam String roleName) {
         User updatedUser = userService.updateUserRole(userCode, roleName);
         return ResponseEntity.ok(updatedUser);
+    }
+
+    @GetMapping
+    @Operation(summary = "List all users", description = "Retrieves all users with their roles for admin management. Restricted to ADMIN.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "List of users retrieved"),
+            @ApiResponse(responseCode = "403", description = "Forbidden: Requires ADMIN role"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userService.getAllUsers();
+        return ResponseEntity.ok(users);
     }
 }

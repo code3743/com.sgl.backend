@@ -20,6 +20,9 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+
+import java.util.List;
 
 @WebMvcTest(UserController.class)
 @AutoConfigureMockMvc(addFilters = false) 
@@ -65,5 +68,18 @@ class UserControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400))
                 .andExpect(jsonPath("$.message").value("User not found: 12345"));
+    }
+
+    @Test
+    @WithMockUser(authorities = "ADMIN")
+    void getAllUsers_success() throws Exception {
+        Role role = Role.builder().id(1L).name("ESTUDIANTE").build();
+        User user = User.builder().code("12345").role(role).build();
+        when(userService.getAllUsers()).thenReturn(List.of(user));
+
+        mockMvc.perform(get("/api/users"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].code").value("12345"))
+                .andExpect(jsonPath("$[0].role.name").value("ESTUDIANTE"));
     }
 }
