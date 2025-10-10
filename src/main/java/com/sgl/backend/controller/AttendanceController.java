@@ -28,7 +28,7 @@ public class AttendanceController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Attendance registered successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid user code or attendance already registered today"),
-            @ApiResponse(responseCode = "403", description = "Forbidden: Requires ADMIN or MONITOR role"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized: Requires ADMIN or MONITOR role"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<Attendance> registerAttendance(@PathVariable String code) {
@@ -40,7 +40,7 @@ public class AttendanceController {
     @Operation(summary = "List attendances", description = "Retrieves attendance records filtered by date range or user. Restricted to ADMIN or MONITOR.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "List of attendances retrieved"),
-            @ApiResponse(responseCode = "403", description = "Forbidden: Requires ADMIN or MONITOR role"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized: Requires ADMIN or MONITOR role"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<List<Attendance>> getAttendances(
