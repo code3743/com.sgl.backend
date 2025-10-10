@@ -77,6 +77,28 @@ public class RoleServiceTest {
     }
 
     @Test
+    void updateRole_adminRole_throwsException() {
+        Role role = Role.builder().id(1L).name("ADMIN").build();
+        when(roleRepository.findById(1L)).thenReturn(Optional.of(role));
+
+        SglException ex = assertThrows(SglException.class, () -> roleService.updateRole(1L, "SUPER_ADMIN"));
+        assertThat(ex.getMessage()).isEqualTo("Cannot update default role: ADMIN");
+    }
+
+    @Test
+    void updateRole_nameAlreadyExists_throwsException() {
+        Role role = Role.builder().id(1L).name("USER").build();
+        Role existing = Role.builder().id(2L).name("NEW_NAME").build();
+
+        when(roleRepository.findById(1L)).thenReturn(Optional.of(role));
+        when(roleRepository.findByName("NEW_NAME")).thenReturn(Optional.of(existing));
+
+        SglException ex = assertThrows(SglException.class, () -> roleService.updateRole(1L, "NEW_NAME"));
+        assertThat(ex.getMessage()).isEqualTo("Role name already exists: NEW_NAME");
+    }
+
+
+    @Test
     void deleteRole_success() {
         Role role = Role.builder().id(1L).name("CUSTOM_ROLE").build();
         when(roleRepository.findById(1L)).thenReturn(Optional.of(role));
