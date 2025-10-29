@@ -5,11 +5,14 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import com.sgl.backend.entity.Laboratory;
 import com.sgl.backend.entity.Role;
 import com.sgl.backend.entity.User;
+import com.sgl.backend.repository.LaboratoryRepository;
 import com.sgl.backend.repository.RoleRepository;
 import com.sgl.backend.repository.UserRepository;
 
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 
 @Component
@@ -18,6 +21,7 @@ public class DataInitializer implements CommandLineRunner {
     
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
+    private final LaboratoryRepository labRepo;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -46,6 +50,17 @@ public class DataInitializer implements CommandLineRunner {
         if (roleRepository.findByName(name).isEmpty()) {
             Role role = Role.builder().name(name).build();
             roleRepository.save(role);
+        }
+    }
+
+    @PostConstruct
+    public void initData() {
+        if (labRepo.count() == 0) {
+            labRepo.save(Laboratory.builder()
+                    .name("Laboratorio Principal")
+                    .capacity(18)  
+                    .active(true)
+                    .build());
         }
     }
 }
