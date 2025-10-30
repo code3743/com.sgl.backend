@@ -2,6 +2,7 @@ package com.sgl.backend.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -41,6 +42,10 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .requestMatchers("/api/users/**", "/api/roles/**").hasAuthority("ADMIN")
                 .requestMatchers("/api/attendances/**").hasAnyAuthority("ADMIN", "MONITOR")
+                .requestMatchers(HttpMethod.POST, "/api/laboratories").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/laboratories/**").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/laboratories").hasAnyAuthority("ADMIN", "DOCENTE")
+                .requestMatchers("/api/practices/**").hasAuthority("DOCENTE")
                 .anyRequest().authenticated()
             )
             .exceptionHandling(ex -> ex
