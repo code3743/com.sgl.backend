@@ -4,28 +4,29 @@ import com.sgl.backend.entity.Role;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-
 import java.util.Optional;
+import static org.junit.jupiter.api.Assertions.*;
 
-import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 class RoleRepositoryTest {
+
     @Autowired
     private RoleRepository roleRepository;
 
     @Test
     void findByName_existingRole_returnsRole() {
-        Role role = Role.builder().name("TEST_ROLE").build();
+        Role role = new Role();
+        role.setName("MONITOR");
         roleRepository.save(role);
 
-        Optional<Role> found = roleRepository.findByName("TEST_ROLE");
-        assertThat(found).isPresent();
-        assertThat(found.get().getName()).isEqualTo("TEST_ROLE");
+        Optional<Role> found = roleRepository.findByName("MONITOR");
+        assertTrue(found.isPresent());
+        assertEquals("MONITOR", found.get().getName());
     }
 
-    @Test 
+    @Test
     void findByName_nonExistingRole_returnsEmpty() {
-        Optional<Role> found = roleRepository.findByName("NON_EXISTENT_ROLE");
-        assertThat(found).isNotPresent();
+        Optional<Role> found = roleRepository.findByName("NOT_EXISTING");
+        assertTrue(found.isEmpty());
     }
 }
