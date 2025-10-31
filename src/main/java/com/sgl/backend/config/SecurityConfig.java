@@ -46,6 +46,10 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT, "/api/laboratories/**").hasAuthority("ADMIN")
                 .requestMatchers(HttpMethod.GET, "/api/laboratories").hasAnyAuthority("ADMIN", "DOCENTE")
                 .requestMatchers("/api/practices/**").hasAuthority("DOCENTE")
+                .requestMatchers("/api/loans").hasAuthority("MONITOR")
+                .requestMatchers("/api/loans/my-active").hasAuthority("ESTUDIANTE")
+                .requestMatchers("/api/loans/active").hasAnyAuthority("ADMIN", "MONITOR")
+                .requestMatchers("/api/loans/*/return").hasAuthority("MONITOR")
                 .anyRequest().authenticated()
             )
             .exceptionHandling(ex -> ex
