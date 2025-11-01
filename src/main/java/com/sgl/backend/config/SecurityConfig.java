@@ -45,7 +45,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/laboratories").hasAuthority("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/laboratories/**").hasAuthority("ADMIN")
                 .requestMatchers(HttpMethod.GET, "/api/laboratories").hasAnyAuthority("ADMIN", "DOCENTE")
-                .requestMatchers("/api/practices/**").hasAuthority("DOCENTE")
+                .requestMatchers("/api/practices/**").hasAnyAuthority("ADMIN", "DOCENTE")
                 .requestMatchers("/api/loans").hasAuthority("MONITOR")
                 .requestMatchers("/api/loans/my-active").hasAuthority("ESTUDIANTE")
                 .requestMatchers("/api/loans/active").hasAnyAuthority("ADMIN", "MONITOR")
