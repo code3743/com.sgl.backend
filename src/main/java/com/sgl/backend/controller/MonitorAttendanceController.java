@@ -33,52 +33,52 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "Monitor Attendance")
 public class MonitorAttendanceController {
 
-    private final MonitorAttendanceService service;
+        private final MonitorAttendanceService service;
 
-    @PostMapping
-    @Operation(summary = "Register check-in/check-out")
-    public ResponseEntity<AttendanceResponse> register(@Valid @RequestBody AttendanceRequest request) {
-        return ResponseEntity.ok(service.registerAttendance(request));
-    }
+        @PostMapping
+        @Operation(summary = "Register check-in/check-out")
+        public ResponseEntity<AttendanceResponse> register(@Valid @RequestBody AttendanceRequest request) {
+                return ResponseEntity.ok(service.registerAttendance(request));
+        }
 
-    @GetMapping("report")
-    @Operation(summary = "Attendance report", description = "Admin only")
-    public ResponseEntity<Page<MonitorReportResponse>> getReport(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end) {
+        @GetMapping("report")
+        @Operation(summary = "Attendance report", description = "Admin only")
+        public ResponseEntity<Page<MonitorReportResponse>> getReport(
+                        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
+                        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end) {
 
-        Pageable pageable = PageRequest.of(0, 10, Sort.by("name").ascending());
+                Pageable pageable = PageRequest.of(0, 10, Sort.by("name").ascending());
 
-        return ResponseEntity.ok(service.getReport(start, end, pageable));
-    }
+                return ResponseEntity.ok(service.getReport(start, end, pageable));
+        }
 
-    @GetMapping(value = "/report/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
-    @Operation(summary = "PDF report")
-    public ResponseEntity<byte[]> getReportPdf(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end) {
+        @GetMapping(value = "/report/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
+        @Operation(summary = "PDF report")
+        public ResponseEntity<byte[]> getReportPdf(
+                        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
+                        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end) {
 
-        Page<MonitorReportResponse> page = service.getReport(start, end, Pageable.unpaged());
-        byte[] pdf = service.generateMonitorReportPdf(page.getContent(), start, end);
+                Page<MonitorReportResponse> page = service.getReport(start, end, Pageable.unpaged());
+                byte[] pdf = service.generateMonitorReportPdf(page.getContent(), start, end);
 
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=reporte_asistencia_" + start + "_" + end + ".pdf")
-                .body(pdf);
-    }
+                return ResponseEntity.ok()
+                                .header(HttpHeaders.CONTENT_DISPOSITION,
+                                                "attachment; filename=reporte_asistencia_" + start + "_" + end + ".pdf")
+                                .body(pdf);
+        }
 
-    @GetMapping(value = "/report/csv", produces = "text/csv")
-    @Operation(summary = "CSV report")
-    public ResponseEntity<byte[]> getReportCsv(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end) {
+        @GetMapping(value = "/report/csv", produces = "text/csv")
+        @Operation(summary = "CSV report")
+        public ResponseEntity<byte[]> getReportCsv(
+                        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
+                        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end) {
 
-        Page<MonitorReportResponse> page = service.getReport(start, end, Pageable.unpaged());
-        byte[] csv = service.generateMonitorReportCsv(page.getContent());
+                Page<MonitorReportResponse> page = service.getReport(start, end, Pageable.unpaged());
+                byte[] csv = service.generateMonitorReportCsv(page.getContent());
 
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=reporte_asistencia_" + start + "_" + end + ".csv")
-                .body(csv);
-    }
+                return ResponseEntity.ok()
+                                .header(HttpHeaders.CONTENT_DISPOSITION,
+                                                "attachment; filename=reporte_asistencia_" + start + "_" + end + ".csv")
+                                .body(csv);
+        }
 }
