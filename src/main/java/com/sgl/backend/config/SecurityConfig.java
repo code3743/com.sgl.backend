@@ -50,6 +50,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/loans/my-active").hasAuthority("ESTUDIANTE")
                 .requestMatchers("/api/loans/active").hasAnyAuthority("ADMIN", "MONITOR")
                 .requestMatchers("/api/loans/*/return").hasAuthority("MONITOR")
+                .requestMatchers("/api/monitor-attendance").hasAuthority("MONITOR")
+                .requestMatchers("/api/monitor-attendance/report/**").hasAuthority("ADMIN")
                 .anyRequest().authenticated()
             )
             .exceptionHandling(ex -> ex
